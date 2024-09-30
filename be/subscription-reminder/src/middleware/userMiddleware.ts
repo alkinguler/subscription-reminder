@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 
+/**
+ * Middleware to hash the user's password before saving it to the database.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next middleware function.
+ */
 export const hashPassword = async (
   req: Request,
   res: Response,

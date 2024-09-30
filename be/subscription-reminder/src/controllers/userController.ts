@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/userModel";
+import User from "../models/User/userModel";
 import { getAllUsers as getAllUsersService } from "../services/userService";
 
+/**
+ * Get all users.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await getAllUsersService();
@@ -15,11 +20,16 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Create a new user.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 export const createUser = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const newUser = new User(req.body);
     await newUser.save();
