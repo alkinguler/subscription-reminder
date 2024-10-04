@@ -6,10 +6,11 @@ import bcrypt from "bcrypt";
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  * @param {NextFunction} next - The next middleware function.
+ * @author alkinguler
  */
 export const hashPassword = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   if (!req.body.password || !req.body.username) {

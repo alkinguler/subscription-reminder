@@ -3,6 +3,7 @@ import User from "../models/User/userModel";
 /**
  * Get all users from the database.
  * @returns {Promise<Array>} - A promise that resolves to an array of users.
+ * @author alkinguler
  */
 export const getAllUsers = async (): Promise<Array<Object>> => {
   return await User.find();
@@ -15,6 +16,7 @@ export const getAllUsers = async (): Promise<Array<Object>> => {
  * @param {string} userData.email - The email of the user.
  * @param {string} userData.password - The password of the user.
  * @returns {Promise<Object>} - A promise that resolves to the created user.
+ * @author alkinguler
  */
 export const createUser = async (userData: {
   username: string;

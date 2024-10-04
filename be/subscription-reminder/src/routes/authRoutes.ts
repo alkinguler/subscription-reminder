@@ -1,12 +1,15 @@
 import { Router } from "express";
 import {
-  signInController,
-  checkSessionValidity,
+  loginController,
+  refreshToken,
+  logoutController,
 } from "../controllers/authController";
+import { rateLimiter, secureEndpoints } from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.post("/signin", signInController);
-router.get("/check-session", checkSessionValidity);
+router.post("/signin", rateLimiter, loginController);
+router.get("/refresh", refreshToken);
+router.get("/logout", logoutController);
 
 export default router;

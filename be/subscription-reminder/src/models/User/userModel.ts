@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
-import { IUser } from "./interfaces/userInterfaces";
+import { IUser } from "../../interfaces/userInterfaces";
 
 /**
  * User schema definition.
