@@ -1,46 +1,81 @@
+import { useForm } from "react-hook-form";
 import "./App.css";
-import Button from "./components/ui/button";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  Form,
+} from "./components/ui/Form/form";
+import { ModeToggle } from "./theme/mode-toggle";
+import { Input } from "./components/ui/Input/input";
+import Button from "./components/ui/Button/button";
 import {
   Card,
+  CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Label } from "@radix-ui/react-label";
-import { Input } from "./components/ui/input";
-import { ModeToggle } from "./theme/mode-toggle";
+} from "./components/ui/card";
 
 function App() {
+  const form = useForm();
+
   return (
     <>
       <ModeToggle />
-      <Card className="mx-auto max-w-sm">
-        <CardHeader className="space-y-1 dark:bg-slate-900">
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
-          <CardDescription>
-            Enter your email and password to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
-            </div>
-            <Button className="w-full">Login</Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Form {...form}>
+        <Card className="m-4 p-4">
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <>
+                  <CardContent className="text-left">
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder="shadcn" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  </CardContent>
+                </>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <>
+                  <CardContent className="text-left">
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="za" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  </CardContent>
+                </>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button
+              variant="destructive"
+              type="submit"
+              onSubmit={() => {
+                console.log("submit button clicked");
+              }}
+            >
+              Submit
+            </Button>
+          </CardFooter>
+        </Card>
+      </Form>
     </>
   );
 }
