@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useTheme from "./hooks/use-theme";
 import { Moon, Sun, Settings } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "node_modules/react-i18next";
 
 export const ThemeToggle = () => {
   const { t } = useTranslation("translation", {
