@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 
 const Login: React.FC = () => {
   const form = useForm();
@@ -27,7 +27,7 @@ const Login: React.FC = () => {
   return (
     <>
       <Form {...form}>
-        <Card className="m-4 p-4">
+        <Card className="mx-4 p-4">
           <CardHeader>
             <CardTitle>{t("title")}</CardTitle>
           </CardHeader>

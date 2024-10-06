@@ -8,7 +8,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-import { useTranslation } from "node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import { Languages } from "lucide-react";
 import Button from "./ui/Button/button";
 
@@ -25,7 +25,7 @@ export const LanguageSwitcher: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline_no_ring" size="icon">
           <Languages className="absolute" />
         </Button>
       </DropdownMenuTrigger>
