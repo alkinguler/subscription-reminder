@@ -6,6 +6,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/Form/form";
 import { Input } from "@/components/ui/Input/input";
 import {
@@ -17,12 +18,32 @@ import {
 } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/config/axiosConfigs";
 
 const Login: React.FC = () => {
-  const form = useForm();
   const { t } = useTranslation("translation", {
     keyPrefix: "login",
   });
+
+  const formSchema = z.object({
+    username: z.string().min(1, "Username is required"),
+    password: z.string().min(1, "Password is required"),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    axios.post("/auth/signin", values).then((response) => {
+      console.log(response);
+    });
+  }
 
   return (
     <>
@@ -46,6 +67,7 @@ const Login: React.FC = () => {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   </CardContent>
                 </>
@@ -66,6 +88,7 @@ const Login: React.FC = () => {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   </CardContent>
                 </>
@@ -73,12 +96,7 @@ const Login: React.FC = () => {
             />
           </CardContent>
           <CardFooter>
-            <Button
-              type="submit"
-              onSubmit={() => {
-                console.log("submit button clicked");
-              }}
-            >
+            <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
               {t("submit", { keyPrefix: "common" })}
             </Button>
           </CardFooter>

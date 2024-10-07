@@ -1,8 +1,8 @@
 import "./App.css";
 import { LanguageSwitcher } from "./components/languageSwitcher";
 import { Card } from "./components/ui/card";
-import Login from "./pages/Login";
 import { ThemeToggle } from "./theme/theme-toggle";
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         <LanguageSwitcher />
         <ThemeToggle />
       </Card>
-      <Login />
+      <Outlet />
     </>
   );
 }
