@@ -4,7 +4,7 @@ import {
   refreshToken,
   logoutController,
 } from "../controllers/authController";
-import { rateLimiter, secureEndpoints } from "../middleware/authMiddleware";
+import { rateLimiter } from "../middleware/authMiddleware";
 
 const router = Router();
 
