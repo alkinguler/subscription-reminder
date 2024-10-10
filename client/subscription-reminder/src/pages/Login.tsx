@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "@/config/axiosConfigs";
+import { useToast } from "@/components/ui/Toaster/hooks/use-toast";
 
 const Login: React.FC = () => {
   const { t } = useTranslation("translation", {
@@ -39,10 +40,28 @@ const Login: React.FC = () => {
       password: "",
     },
   });
+  const { toast } = useToast();
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    axios.post("/auth/signin", values).then((response) => {
-      console.log(response);
-    });
+    axios
+      .post("/auth/signin", values)
+      .then((response) => {
+        toast({
+          title: "Successful",
+          description: response.data.error,
+          variant: "successful",
+          icon: true,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.response.data.error,
+          variant: "destructive",
+          icon: true,
+        });
+      });
   }
 
   return (
