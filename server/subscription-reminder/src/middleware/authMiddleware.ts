@@ -2,6 +2,7 @@ import { NextFunction } from "express";
 import { rateLimit } from "express-rate-limit";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import rateLimiterErrorKeys from "../error/rateLimiterErrorKeys";
 
 /**
  * Rate limiter middleware for Express applications.
@@ -13,9 +14,9 @@ import jwt from "jsonwebtoken";
 export const rateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // limit each IP to 100 requests per windowMs
-  message: "Too many requests, please try again later.",
+  message: rateLimiterErrorKeys.REQUEST_LIMIT_EXCEEDED,
   handler: (_req, res, _next, options) => {
-    res.status(options.statusCode).send(options.message);
+    res.status(options.statusCode).send({ error: options.message });
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers

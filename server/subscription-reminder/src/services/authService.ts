@@ -3,6 +3,7 @@ import { Tokens } from "../interfaces/authInterfaces";
 import { IUser } from "../interfaces/userInterfaces";
 import jwt from "jsonwebtoken";
 import User from "../models/User/userModel";
+import authErrorKeys from "../error/authErrorKeys";
 
 /**
  * Generates a JWT token for the given user.
@@ -28,7 +29,7 @@ export const generateTokens = async (
     );
     return { accessToken, refreshToken };
   } else {
-    throw new Error("Unauthorized access!");
+    throw new Error(authErrorKeys.UNAUTHORIZED_ACCESS);
   }
 };
 
@@ -56,7 +57,7 @@ export const verifyToken = async (
 export const verifyRefreshToken = async (req: Request, res: Response) => {
   const cookies = req.cookies;
   if (!cookies?.refreshToken) {
-    return res.status(401).json({ error: "Unauthorized access." });
+    return res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
   }
   const refreshToken = cookies.refreshToken;
   jwt.verify(
@@ -64,15 +65,13 @@ export const verifyRefreshToken = async (req: Request, res: Response) => {
     process.env.JWT_REFRESH_TOKEN_SECRET!,
     async (err: jwt.VerifyErrors | null, decoded: any) => {
       if (err) {
-        return res.status(403).json({ error: "Forbidden access." });
+        return res.status(403).json({ error: authErrorKeys.FORBIDDEN_ACCESS });
       }
 
       if (decoded) {
         const foundUser = await User.findOne({ username: decoded.username });
         if (!foundUser) {
-          res
-            .status(401)
-            .json({ error: "Unauthorized access. User not found." });
+          res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
         } else {
           const accessToken = jwt.sign(
             { username: foundUser.username },

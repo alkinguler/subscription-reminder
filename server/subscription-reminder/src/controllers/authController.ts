@@ -5,7 +5,7 @@ import {
   verifyToken,
   verifyRefreshToken,
 } from "../services/authService";
-import asyncHandler from "express-async-handler";
+import authErrorKeys from "../error/authErrorKeys";
 
 /**
  * Handles user login by verifying credentials and generating tokens.
@@ -19,11 +19,11 @@ export const loginController = async (req: Request, res: Response) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
   if (!username || !password) {
-    res.status(400).json({ error: "Username and password are required" });
+    res.status(400).json({ error: authErrorKeys.CREDENTIALS_REQUIRED });
   }
 
   if (!user) {
-    res.status(401).json({ error: "Invalid username or password" });
+    res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
   } else {
     try {
       const { accessToken, refreshToken } = await generateTokens(
@@ -38,7 +38,7 @@ export const loginController = async (req: Request, res: Response) => {
       });
       res.status(200).json({ username, accessToken });
     } catch (error) {
-      res.status(401).json({ error: (error as Error).message });
+      res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
     }
   }
 };
@@ -55,7 +55,7 @@ export const loginController = async (req: Request, res: Response) => {
 export const refreshToken = async (req: Request, res: Response) => {
   const cookies = req.cookies;
   if (!cookies?.refreshToken) {
-    res.status(401).json({ error: "Unauthorized access. No refresh token." });
+    res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
   } else {
     verifyRefreshToken(req, res);
   }
@@ -79,6 +79,6 @@ export const logoutController = async (req: Request, res: Response) => {
       secure: true,
       sameSite: "none",
     });
-    res.json({ message: "Cookie cleared" });
+    res.json({ message: "Cookie cleared." });
   }
 };
