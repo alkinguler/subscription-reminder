@@ -23,7 +23,7 @@ export const loginController = async (req: Request, res: Response) => {
   }
 
   if (!user) {
-    res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
+    res.status(401).json({ error: authErrorKeys.USER_NOT_FOUND });
   } else {
     try {
       const { accessToken, refreshToken } = await generateTokens(
@@ -38,7 +38,9 @@ export const loginController = async (req: Request, res: Response) => {
       });
       res.status(200).json({ username, accessToken });
     } catch (error) {
-      res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
+      res
+        .status(401)
+        .json({ error: authErrorKeys.INVALID_USERNAME_OR_PASSWORD });
     }
   }
 };
