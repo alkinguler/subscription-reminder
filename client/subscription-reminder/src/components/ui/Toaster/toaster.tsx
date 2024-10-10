@@ -12,8 +12,8 @@ import { CircleX, CircleCheck } from "lucide-react";
 export function Toaster() {
   const { toasts } = useToast();
   const iconVariantMapper: { [key: string]: JSX.Element } = {
-    destructive: <CircleX />,
-    successful: <CircleCheck />,
+    destructive: <CircleX className="min-w-fit" />,
+    successful: <CircleCheck className="min-w-fit" />,
   };
 
   return (

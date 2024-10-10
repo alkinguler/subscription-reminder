@@ -56,12 +56,22 @@ const Login: React.FC = () => {
       .catch((error) => {
         console.log(error);
         toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.response.data.error,
+          title: t("titles.SOMETHING_WENT_WRONG", { keyPrefix: "error" }),
+          description: t(`errorKeys.${error.response.data.error}`, {
+            keyPrefix: "error",
+          }),
           variant: "destructive",
           icon: true,
         });
-      });
+      })
+      .catch(() =>
+        toast({
+          title: t("titles.SOMETHING_WENT_WRONG", { keyPrefix: "error" }),
+          description: "error occured",
+          variant: "destructive",
+          icon: true,
+        })
+      );
   }
 
   return (

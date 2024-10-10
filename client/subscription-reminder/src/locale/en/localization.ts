@@ -1,16 +1,11 @@
+import commonLocale from "./common/common-locale";
+import errorLocale from "./errors/error-locale";
+import loginLocale from "./login/login-locale";
+
 export default {
-  common: {
-    submit: "Submit",
-  },
-  login: {
-    title: "Login",
-    username: "Username",
-    password: "Password",
-    placeholders: {
-      username: "Enter your username",
-      password: "Enter your password",
-    },
-  },
+  ...loginLocale,
+  ...commonLocale,
+  ...errorLocale,
   themeToggle: {
     title: "Theme",
     light: "Light",

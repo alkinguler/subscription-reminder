@@ -1,16 +1,11 @@
+import commonLocale from "./common/common-locale";
+import errorLocale from "./errors/error-locale";
+import loginLocale from "./login/login-locale";
+
 export default {
-  common: {
-    submit: "Gönder",
-  },
-  login: {
-    title: "Başlık",
-    username: "Kullanıcı adı",
-    password: "Şifre",
-    placeholders: {
-      username: "Kullanıcı adınızı giriniz",
-      password: "Şifrenizi giriniz",
-    },
-  },
+  ...loginLocale,
+  ...commonLocale,
+  ...errorLocale,
   themeToggle: {
     title: "Tema",
     light: "Aydınlık",
