@@ -45,6 +45,8 @@ export const secureEndpoints = (
         ? authHeader[0].split(" ")[1]
         : authHeader.split(" ")[1];
       jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET!);
+    } else {
+      throw new Error();
     }
     next();
   } catch (error) {
