@@ -32,9 +32,9 @@ const Input = React.forwardRef<
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? (
-            <EyeOffIcon className="h-4 w-4 focus:ring-offset-0" />
-          ) : (
             <EyeIcon className="h-4 w-4 focus:ring-offset-0" />
+          ) : (
+            <EyeOffIcon className="h-4 w-4 focus:ring-offset-0" />
           )}
         </Button>
       )}

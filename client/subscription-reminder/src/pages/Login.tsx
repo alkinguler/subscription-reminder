@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@/components/ui/Button/button";
 import {
   Form,
@@ -22,12 +22,18 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "@/config/axiosConfigs";
 import { useToast } from "@/components/ui/Toaster/hooks/use-toast";
+import useAuthStore from "@/store/auth/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import { signIn } from "@/app/api/authApi";
+import { SignInErrorResponse, SignInResponse } from "@/app/types/authTypes";
+import { AxiosResponse } from "axios";
 
 const Login: React.FC = () => {
   const { t } = useTranslation("translation", {
     keyPrefix: "login",
   });
-
+  const { token, setUsername, setToken, resetAuthData } = useAuthStore();
+  const navigate = useNavigate();
   const formSchema = z.object({
     username: z.string().min(1, "Username is required"),
     password: z.string().min(1, "Password is required"),
@@ -42,38 +48,51 @@ const Login: React.FC = () => {
   });
   const { toast } = useToast();
 
+  const onSignInSuccess = (authResponse: AxiosResponse<SignInResponse>) => {
+    toast({
+      title: t("success", {
+        keyPrefix: "common",
+      }),
+      variant: "successful",
+      icon: true,
+    });
+    setUsername(authResponse.data.username);
+    setToken(authResponse.data.accessToken);
+    navigate("/dashboard");
+  };
+
+  const onSignInError = (response: SignInErrorResponse) => {
+    toast({
+      title: t("titles.SOMETHING_WENT_WRONG", { keyPrefix: "error" }),
+      description: t(`errorKeys.${response.response.data.error}`, {
+        keyPrefix: "error",
+      }),
+      variant: "destructive",
+      icon: true,
+    });
+  };
+
+  const onSignInTimeout = () => {
+    toast({
+      title: t("titles.SOMETHING_WENT_WRONG", { keyPrefix: "error" }),
+      description: "error occured",
+      variant: "destructive",
+      icon: true,
+    });
+  };
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    axios
-      .post("/auth/signin", values)
-      .then((response) => {
-        toast({
-          title: "Successful",
-          description: response.data.error,
-          variant: "successful",
-          icon: true,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        toast({
-          title: t("titles.SOMETHING_WENT_WRONG", { keyPrefix: "error" }),
-          description: t(`errorKeys.${error.response.data.error}`, {
-            keyPrefix: "error",
-          }),
-          variant: "destructive",
-          icon: true,
-        });
-      })
-      .catch(() =>
-        toast({
-          title: t("titles.SOMETHING_WENT_WRONG", { keyPrefix: "error" }),
-          description: "error occured",
-          variant: "destructive",
-          icon: true,
-        })
-      );
+    signIn(values, onSignInSuccess, onSignInError, onSignInTimeout);
   }
 
+  useEffect(() => {
+    if (token) {
+      axios
+        .get("/auth/refresh")
+        .then(() => navigate("/dashboard"))
+        .catch(() => resetAuthData());
+    }
+  });
   return (
     <>
       <Form {...form}>
