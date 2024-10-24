@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import { port } from "./config/app.config.ts";
-import bodyParser from "body-parser";
-import userRoutes from "./routes/userRoutes.ts";
 import authRoutes from "./routes/authRoutes.ts";
+import userRoutes from "./routes/userRoutes.ts";
+import subscriptionRoutes from "./routes/subscriptionRoutes.ts";
 import "./infrastructure/db.ts";
 import { errorHandler } from "./middleware/errorMiddleware.ts";
 import cookieParser from "cookie-parser";
@@ -22,6 +22,7 @@ app.use(
 );
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
+app.use("/subscription", subscriptionRoutes);
 
 // Error-handling middleware
 app.use(errorHandler);
