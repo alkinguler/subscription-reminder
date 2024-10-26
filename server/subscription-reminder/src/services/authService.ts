@@ -88,14 +88,12 @@ export const verifyRefreshToken = async (req: Request, res: Response) => {
 /**
  * Extracts the token from the Authorization header of the HTTP request.
  * If the token is not found, throws an error.
- *
  * @param {Request} req - The incoming request object.
  * @returns {string} - The extracted JWT token.
  * @throws {Error} - Throws an error if the token is not found in the header.
  * @author alkinguler
  */
-
-export const getTokenFromHeader = (req: Request) => {
+export const getTokenFromReqHeader = async (req: Request): Promise<string> => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   if (authHeader) {
     const token = Array.isArray(authHeader)
