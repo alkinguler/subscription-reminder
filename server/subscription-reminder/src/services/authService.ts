@@ -76,11 +76,33 @@ export const verifyRefreshToken = async (req: Request, res: Response) => {
           const accessToken = jwt.sign(
             { username: foundUser.username },
             process.env.JWT_ACCESS_TOKEN_SECRET!,
-            { expiresIn: "10s" }
+            { expiresIn: "1d" }
           );
           res.status(200).json({ username: foundUser.username, accessToken });
         }
       }
     }
   );
+};
+
+/**
+ * Extracts the token from the Authorization header of the HTTP request.
+ * If the token is not found, throws an error.
+ *
+ * @param {Request} req - The incoming request object.
+ * @returns {string} - The extracted JWT token.
+ * @throws {Error} - Throws an error if the token is not found in the header.
+ * @author alkinguler
+ */
+
+export const getTokenFromHeader = (req: Request) => {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (authHeader) {
+    const token = Array.isArray(authHeader)
+      ? authHeader[0].split(" ")[1]
+      : authHeader.split(" ")[1];
+    return token;
+  } else {
+    throw new Error(authErrorKeys.TOKEN_NOT_FOUND);
+  }
 };

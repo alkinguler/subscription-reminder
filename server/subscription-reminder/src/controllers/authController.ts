@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/User/userModel";
-import {
-  generateTokens,
-  verifyToken,
-  verifyRefreshToken,
-} from "../services/authService";
+import { generateTokens, verifyRefreshToken } from "../services/authService";
 import authErrorKeys from "../error/authErrorKeys";
 
 /**
@@ -18,10 +14,10 @@ import authErrorKeys from "../error/authErrorKeys";
 export const loginController = async (req: Request, res: Response) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
+
   if (!username || !password) {
     res.status(400).json({ error: authErrorKeys.CREDENTIALS_REQUIRED });
   }
-
   if (!user) {
     res.status(401).json({ error: authErrorKeys.USER_NOT_FOUND });
   } else {

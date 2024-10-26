@@ -3,6 +3,7 @@ import { rateLimit } from "express-rate-limit";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import rateLimiterErrorKeys from "../error/rateLimiterErrorKeys";
+import authErrorKeys from "../error/authErrorKeys";
 
 /**
  * Rate limiter middleware for Express applications.
@@ -50,6 +51,6 @@ export const secureEndpoints = (
     }
     next();
   } catch (error) {
-    res.status(401).json({ error: "Unauthorized" });
+    res.status(401).json({ error: authErrorKeys.UNAUTHORIZED_ACCESS });
   }
 };

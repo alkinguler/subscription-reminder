@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import authErrorKeys from "../error/authErrorKeys";
 import User from "../models/User/userModel";
-import commonErrorKeys from "../error/commonErrorKeys";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 /**
  * Get all users from the database.
@@ -42,6 +42,28 @@ export const getUserIdByUsername = async (
   const user = await User.findOne({ username }).select("_id");
   if (user) {
     return user._id;
+  } else {
+    throw new Error(authErrorKeys.USER_NOT_FOUND);
+  }
+};
+
+/**
+ * Get the user ID by username.
+ * @param {string} username - The username of the user.
+ * @returns {Promise<Types.ObjectId>} - The user ID if found, otherwise null.
+ * @author alkinguler
+ */
+export const getUserIdByToken = async (
+  token: string
+): Promise<Types.ObjectId> => {
+  const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET!);
+  if (
+    typeof decoded === "object" &&
+    decoded !== null &&
+    "username" in decoded
+  ) {
+    const user = decoded as JwtPayload;
+    return await getUserIdByUsername(user.username);
   } else {
     throw new Error(authErrorKeys.USER_NOT_FOUND);
   }
