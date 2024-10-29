@@ -26,5 +26,7 @@ export default {
     forward: "İleri",
     yes: "Evet",
     no: "Hayır",
+    selectPlaceholder: "Seçiniz...",
+    required: "Gerekli",
   },
 };

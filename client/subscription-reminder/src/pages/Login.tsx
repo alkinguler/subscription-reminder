@@ -22,21 +22,22 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "@/config/axiosConfigs";
 import { useToast } from "@/components/ui/Toaster/hooks/use-toast";
-import useAuthStore from "@/store/auth/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { signIn } from "@/app/api/authApi";
+import { useSignIn } from "@/app/api/authApi";
 import { SignInErrorResponse, SignInResponse } from "@/app/types/authTypes";
-import { AxiosResponse } from "axios";
+import useStore from "@/store/useStore";
 
 const Login: React.FC = () => {
   const { t } = useTranslation("translation", {
     keyPrefix: "login",
   });
-  const { token, setUsername, setToken, resetAuthData } = useAuthStore();
+  const { token, setUsername, setToken, resetAuthData } = useStore(
+    (state) => state.authSlice
+  );
   const navigate = useNavigate();
   const formSchema = z.object({
-    username: z.string().min(1, "Username is required"),
-    password: z.string().min(1, "Password is required"),
+    username: z.string().min(1, t("validations.usernameRequired")),
+    password: z.string().min(1, t("validations.passwordRequired")),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -47,8 +48,9 @@ const Login: React.FC = () => {
     },
   });
   const { toast } = useToast();
+  const { mutate } = useSignIn();
 
-  const onSignInSuccess = (authResponse: AxiosResponse<SignInResponse>) => {
+  const onSignInSuccess = (authResponse: SignInResponse) => {
     toast({
       title: t("success", {
         keyPrefix: "common",
@@ -56,8 +58,8 @@ const Login: React.FC = () => {
       variant: "successful",
       icon: true,
     });
-    setUsername(authResponse.data.username);
-    setToken(authResponse.data.accessToken);
+    setUsername(authResponse.username);
+    setToken(authResponse.accessToken);
     navigate("/dashboard");
   };
 
@@ -81,9 +83,25 @@ const Login: React.FC = () => {
     });
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    signIn(values, onSignInSuccess, onSignInError, onSignInTimeout);
-  }
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    mutate(values, {
+      onSuccess: (data: SignInResponse) => {
+        onSignInSuccess(data);
+      },
+      onError: (error: unknown) => {
+        if ((error as SignInErrorResponse).response?.data?.error) {
+          onSignInError(error as SignInErrorResponse);
+        } else {
+          onSignInTimeout();
+        }
+      },
+      onSettled: (data, error) => {
+        if (!data && !error) {
+          onSignInTimeout();
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     if (token) {

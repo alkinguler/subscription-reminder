@@ -16,5 +16,12 @@ export const ThemeToggle = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  return <Switch onCheckedChange={switchTheme}>{themeIcon}</Switch>;
+  return (
+    <Switch
+      className="data-[state=unchecked]:bg-primary data-[state=checked]:bg-primary"
+      onCheckedChange={switchTheme}
+    >
+      {themeIcon}
+    </Switch>
+  );
 };

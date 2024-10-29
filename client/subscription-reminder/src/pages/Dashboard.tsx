@@ -1,5 +1,5 @@
 import { refreshToken } from "@/app/api/authApi";
-import useAuthStore from "@/store/auth/useAuthStore";
+import SubscriptionContainer from "@/modules/Subscriptions/SubscriptionContainer";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -12,8 +12,7 @@ const Dashboard = () => {
     );
   });
 
-  const { username } = useAuthStore();
-  return <div>Hi, {username}</div>;
+  return <SubscriptionContainer />;
 };
 
 export default Dashboard;

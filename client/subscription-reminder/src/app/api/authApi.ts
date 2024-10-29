@@ -1,39 +1,35 @@
 import axios from "@/config/axiosConfigs";
-import { AxiosResponse } from "axios";
-import {
-  AuthFormInput,
-  SignInErrorResponse,
-  SignInResponse,
-} from "../types/authTypes";
+import { AuthFormInput, SignInErrorResponse } from "../types/authTypes";
+import { useMutation } from "@tanstack/react-query";
 
-export const signIn = (
-  formValues: AuthFormInput,
-  cb: (response: AxiosResponse<SignInResponse>) => unknown,
-  errCb: (errorResponse: SignInErrorResponse) => unknown,
-  reqTimeoutCb: () => unknown
-) => {
-  axios
-    .post("/auth/signin", formValues)
-    .then((response) => {
-      cb(response);
-    })
-    .catch((errorResponse) => {
-      console.error(errorResponse);
-      errCb(errorResponse);
-    })
-    .catch(() => reqTimeoutCb());
+export const useSignIn = () => {
+  return useMutation({
+    mutationFn: async (formValues: AuthFormInput) => {
+      const response = await axios.post("/auth/signin", formValues);
+      return response.data;
+    },
+    onError: (error: SignInErrorResponse) => {
+      return error.response.data.error;
+    },
+  });
 };
 
-export const logOut = (cb: () => unknown, errCb: () => unknown) => {
-  axios
-    .get("/auth/logout")
-    .then(() => {
-      cb();
-    })
-    .catch((errorResponse) => {
-      console.error(errorResponse);
-      errCb();
-    });
+export const useLogOut = () => {
+  // axios
+  //   .get("/auth/logout")
+  //   .then(() => {
+  //     cb();
+  //   })
+  //   .catch((errorResponse) => {
+  //     console.error(errorResponse);
+  //     errCb();
+  //   });
+
+  return useMutation({
+    mutationFn: async () => {
+      return await axios.get("auth/logout");
+    },
+  });
 };
 
 export const refreshToken = (

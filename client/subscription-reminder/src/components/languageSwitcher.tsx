@@ -11,15 +11,18 @@ import {
 import { useTranslation } from "react-i18next";
 import { Languages } from "lucide-react";
 import Button from "./ui/Button/button";
+import { useTranslationSlice } from "@/store/useStore";
 
 export const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
   const { t } = useTranslation("translation", {
     keyPrefix: "languageSwitcher",
   });
+  const { setLanguage } = useTranslationSlice();
 
   const changeLanguage = (language: string) => {
     i18n.changeLanguage(language);
+    setLanguage(language);
   };
 
   return (

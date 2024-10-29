@@ -26,5 +26,7 @@ export default {
     forward: "Forward",
     yes: "Yes",
     no: "No",
+    selectPlaceholder: "Seçiniz...",
+    required: "Required",
   },
 };
