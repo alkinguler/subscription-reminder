@@ -1,18 +1,28 @@
-import { refreshToken } from "@/app/api/authApi";
+import { useRefreshToken } from "@/app/api/authApi";
 import SubscriptionContainer from "@/modules/Subscriptions/SubscriptionContainer";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { memo, useEffect } from "react";
+import { useAuthSlice } from "@/store/useStore";
 
-const Dashboard = () => {
+const Dashboard = memo(() => {
   const navigate = useNavigate();
+  const { data, isSuccess, isError } = useRefreshToken();
+  const { setToken } = useAuthSlice();
+  const responseAccessToken: string = isSuccess ? data!.data.accessToken : null;
+
   useEffect(() => {
-    refreshToken(
-      () => {},
-      () => navigate("/login")
-    );
-  });
+    if (isSuccess && responseAccessToken) {
+      setToken(responseAccessToken);
+    }
+  }, [responseAccessToken, isSuccess, setToken]);
+
+  useEffect(() => {
+    if (isError) {
+      navigate("/login");
+    }
+  }, [isError, navigate]);
 
   return <SubscriptionContainer />;
-};
+});
 
 export default Dashboard;

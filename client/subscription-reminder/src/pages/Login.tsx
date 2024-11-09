@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { useSignIn } from "@/app/api/authApi";
 import { SignInErrorResponse, SignInResponse } from "@/app/types/authTypes";
 import useStore from "@/store/useStore";
+import { Loader2 } from "lucide-react";
 
 const Login: React.FC = () => {
   const { t } = useTranslation("translation", {
@@ -48,7 +49,7 @@ const Login: React.FC = () => {
     },
   });
   const { toast } = useToast();
-  const { mutate } = useSignIn();
+  const { mutate, isPending } = useSignIn();
 
   const onSignInSuccess = (authResponse: SignInResponse) => {
     toast({
@@ -162,7 +163,14 @@ const Login: React.FC = () => {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+            <Button
+              disabled={isPending}
+              type={"submit"}
+              onClick={form.handleSubmit(onSubmit)}
+            >
+              {isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
               {t("submit", { keyPrefix: "common" })}
             </Button>
           </CardFooter>

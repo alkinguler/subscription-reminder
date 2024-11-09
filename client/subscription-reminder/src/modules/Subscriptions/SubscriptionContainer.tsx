@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -51,6 +51,11 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import DisneyPlusIcon from "@/assets/icons/DisneyPlus";
+import { toLower } from "lodash";
+import NetflixIcon from "@/assets/icons/Netflix";
+import { useSubscriptionQuery } from "@/app/api/subscriptionApi";
+import YoutubeIcon from "@/assets/icons/YouTube";
 
 type Subscription = {
   id: number;
@@ -68,6 +73,13 @@ const SubscriptionContainer = () => {
   const { t: commonTranslation } = useTranslation("translation", {
     keyPrefix: "common",
   });
+
+  const { data, isError, isLoading, isSuccess } = useSubscriptionQuery();
+  console.log(data, isError, isLoading, isSuccess);
+
+  const getTableIcon = (subscriptionName: string) => {
+    const tableIconMapper = {};
+  };
 
   const [subscriptions] = useState<Subscription[]>([
     {
@@ -107,6 +119,13 @@ const SubscriptionContainer = () => {
     },
   ]);
 
+  const iconList: Record<string, React.ElementType> = {
+    ["disney+"]: DisneyPlusIcon,
+    ["netflix"]: NetflixIcon,
+    ["youtube"]: YoutubeIcon,
+    DEFAULT: CreditCard,
+  };
+
   interface ComboboxPairs {
     key: string;
     value: string;
@@ -136,6 +155,40 @@ const SubscriptionContainer = () => {
     },
   });
 
+  const iconClassInjector = ({
+    IconComponent,
+    style = "",
+    iconColor = "",
+  }: {
+    IconComponent: React.ElementType;
+    style?: string;
+    iconColor?: string;
+  }) => {
+    const iconClass = `h-10 w-10 p-1 self-end md:mt-1 rounded-md ${style}`;
+    return (
+      <IconComponent className={`${iconClass} ${style}`} color={iconColor} />
+    );
+  };
+
+  const generateNameBoundedIcon = (name: string): JSX.Element => {
+    const IconComponent = iconList[name] ?? iconList["DEFAULT"];
+    const iconColor = iconList[name]
+      ? name === "youtube"
+        ? "#ff0033"
+        : "#136878"
+      : "black";
+    const style =
+      name === "netflix"
+        ? "border border-primary dark:outline-none dark:border-0 bg-black"
+        : "border border-primary dark:outline-none dark:border-0 bg-white";
+
+    return iconClassInjector({
+      IconComponent,
+      iconColor,
+      style,
+    });
+  };
+
   // TODO: will be implemented.
   // const handleSubmit = () => {};
 
@@ -146,10 +199,8 @@ const SubscriptionContainer = () => {
       // name renderer
       name: () => (
         <div className="flex flex-row gap-2">
-          {formFieldOptions.value === "a" ? (
-            <Plus className="h-10 w-12 self-end md:mt-1 rounded-md border border-input" />
-          ) : (
-            <></>
+          {generateNameBoundedIcon(
+            toLower(formFieldOptions.value).replace(/\s/g, "")
           )}
           <FormItem className="flex-1">
             <FormLabel>{subscriptionTranslation("name")}</FormLabel>
@@ -249,7 +300,15 @@ const SubscriptionContainer = () => {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    setIsDialogOpen(false);
   };
+
+  useEffect(() => {
+    return () => {
+      form.reset();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDialogOpen]);
 
   return (
     <Card className="w-[100vw] scale-90 max-w-3xl mx-auto sm:scale-100 md:min-w-[40vw]">

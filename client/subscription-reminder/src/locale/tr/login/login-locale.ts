@@ -1,6 +1,6 @@
 export default {
   login: {
-    title: "Başlık",
+    title: "Giriş Yap",
     username: "Kullanıcı adı",
     password: "Şifre",
     placeholders: {

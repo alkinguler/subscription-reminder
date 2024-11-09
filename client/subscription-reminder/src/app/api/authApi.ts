@@ -1,6 +1,6 @@
 import axios from "@/config/axiosConfigs";
 import { AuthFormInput, SignInErrorResponse } from "../types/authTypes";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useSignIn = () => {
   return useMutation({
@@ -15,16 +15,6 @@ export const useSignIn = () => {
 };
 
 export const useLogOut = () => {
-  // axios
-  //   .get("/auth/logout")
-  //   .then(() => {
-  //     cb();
-  //   })
-  //   .catch((errorResponse) => {
-  //     console.error(errorResponse);
-  //     errCb();
-  //   });
-
   return useMutation({
     mutationFn: async () => {
       return await axios.get("auth/logout");
@@ -32,12 +22,13 @@ export const useLogOut = () => {
   });
 };
 
-export const refreshToken = (
-  cb: () => unknown,
-  errCb: (errCb: unknown) => unknown
-) => {
-  axios
-    .get("/auth/refresh")
-    .then(() => cb())
-    .catch((err) => errCb(err));
+export const useRefreshToken = () => {
+  const { data, isError, isLoading, isSuccess } = useQuery({
+    queryKey: ["subscriptions-query"],
+    queryFn: async () => {
+      return await axios.get("/auth/refresh");
+    },
+  });
+
+  return { data, isError, isLoading, isSuccess };
 };
