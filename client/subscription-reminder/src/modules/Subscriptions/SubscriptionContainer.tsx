@@ -9,16 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import {
-  CreditCard,
-  Zap,
-  Building2,
-  GraduationCap,
-  CalendarDays,
-  Plus,
-  ChevronsUpDown,
-  Check,
-} from "lucide-react";
+import { CreditCard, Plus, ChevronsUpDown, Check } from "lucide-react";
 import Button from "@/components/ui/Button/button";
 import { Input } from "@/components/ui/Input/input";
 import {
@@ -50,20 +41,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { cn } from "@/lib/utils";
+import { cn, toLowerAndTrimSpaces } from "@/lib/utils";
 import DisneyPlusIcon from "@/assets/icons/DisneyPlus";
-import { toLower } from "lodash";
 import NetflixIcon from "@/assets/icons/Netflix";
 import { useSubscriptionQuery } from "@/app/api/subscriptionApi";
 import YoutubeIcon from "@/assets/icons/YouTube";
 
-type Subscription = {
-  id: number;
-  name: string;
-  price: number;
-  duration: string;
-  icon: React.ReactNode;
-};
+import { Subscription } from "@/app/types/subscriptionTypes.js";
+import { getThemeColors } from "@/theme/utils/themeUtils";
 
 const SubscriptionContainer = () => {
   const [open, setOpen] = React.useState(false);
@@ -77,45 +62,36 @@ const SubscriptionContainer = () => {
   const { data, isError, isLoading, isSuccess } = useSubscriptionQuery();
   console.log(data, isError, isLoading, isSuccess);
 
-  const getTableIcon = (subscriptionName: string) => {
-    const tableIconMapper = {};
-  };
-
   const [subscriptions] = useState<Subscription[]>([
     {
       id: 1,
-      name: "Basic Plan",
+      name: "Netflix",
       price: 9.99,
       duration: "monthly",
-      icon: <CreditCard className="h-5 w-5" />,
     },
     {
       id: 2,
-      name: "Pro Plan",
+      name: "Youtube",
       price: 19.99,
       duration: "monthly",
-      icon: <Zap className="h-5 w-5" />,
     },
     {
       id: 3,
-      name: "Enterprise Plan",
+      name: "Disney +",
       price: 49.99,
       duration: "monthly",
-      icon: <Building2 className="h-5 w-5" />,
     },
     {
       id: 4,
       name: "Student Plan",
       price: 4.99,
       duration: "monthly",
-      icon: <GraduationCap className="h-5 w-5" />,
     },
     {
       id: 5,
       name: "Annual Basic",
       price: 99.99,
       duration: "yearly",
-      icon: <CalendarDays className="h-5 w-5" />,
     },
   ]);
 
@@ -170,6 +146,16 @@ const SubscriptionContainer = () => {
     );
   };
 
+  const generateTableIcon = (subscriptionName: string) => {
+    const Icon = iconList[subscriptionName] ?? iconList["DEFAULT"];
+    console.log(Icon);
+    return iconClassInjector({
+      IconComponent: Icon,
+      style: "justify-self-center",
+      iconColor: getThemeColors().primary.DEFAULT,
+    });
+  };
+
   const generateNameBoundedIcon = (name: string): JSX.Element => {
     const IconComponent = iconList[name] ?? iconList["DEFAULT"];
     const iconColor = iconList[name]
@@ -200,7 +186,7 @@ const SubscriptionContainer = () => {
       name: () => (
         <div className="flex flex-row gap-2">
           {generateNameBoundedIcon(
-            toLower(formFieldOptions.value).replace(/\s/g, "")
+            toLowerAndTrimSpaces(formFieldOptions.value)
           )}
           <FormItem className="flex-1">
             <FormLabel>{subscriptionTranslation("name")}</FormLabel>
@@ -364,7 +350,9 @@ const SubscriptionContainer = () => {
           <TableBody>
             {subscriptions.map((sub) => (
               <TableRow key={sub.id}>
-                <TableCell>{sub.icon}</TableCell>
+                <TableCell>
+                  {generateTableIcon(toLowerAndTrimSpaces(sub.name))}
+                </TableCell>
                 <TableCell>{sub.name}</TableCell>
                 <TableCell>${sub.price.toFixed(2)}</TableCell>
                 <TableCell>
