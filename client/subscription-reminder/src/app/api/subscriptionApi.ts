@@ -1,6 +1,7 @@
 import axios from "@/config/axiosConfigs";
 import { useAuthSlice } from "@/store/useStore";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Subscription } from "../types/subscriptionTypes";
 
 export const useSubscriptionQuery = () => {
   const { token } = useAuthSlice();
@@ -14,4 +15,16 @@ export const useSubscriptionQuery = () => {
   });
 
   return { data, isError, isLoading, isSuccess };
+};
+
+export const useCreateSubscription = () => {
+  return useMutation({
+    mutationFn: async (formValues: Subscription) => {
+      const response = await axios.post("/subscription/create", formValues);
+      return response.data;
+    },
+    onError: (error) => {
+      return error;
+    },
+  });
 };

@@ -49,6 +49,7 @@ import YoutubeIcon from "@/assets/icons/YouTube";
 
 import { Subscription } from "@/app/types/subscriptionTypes.js";
 import { getThemeColors } from "@/theme/utils/themeUtils";
+import { toLower } from "lodash";
 
 const SubscriptionContainer = () => {
   const [open, setOpen] = React.useState(false);
@@ -59,41 +60,14 @@ const SubscriptionContainer = () => {
     keyPrefix: "common",
   });
 
-  const { data, isError, isLoading, isSuccess } = useSubscriptionQuery();
-  console.log(data, isError, isLoading, isSuccess);
+  const {
+    data: payload,
+    isError,
+    isLoading,
+    isSuccess,
+  } = useSubscriptionQuery();
 
-  const [subscriptions] = useState<Subscription[]>([
-    {
-      id: 1,
-      name: "Netflix",
-      price: 9.99,
-      duration: "monthly",
-    },
-    {
-      id: 2,
-      name: "Youtube",
-      price: 19.99,
-      duration: "monthly",
-    },
-    {
-      id: 3,
-      name: "Disney +",
-      price: 49.99,
-      duration: "monthly",
-    },
-    {
-      id: 4,
-      name: "Student Plan",
-      price: 4.99,
-      duration: "monthly",
-    },
-    {
-      id: 5,
-      name: "Annual Basic",
-      price: 99.99,
-      duration: "yearly",
-    },
-  ]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
   const iconList: Record<string, React.ElementType> = {
     ["disney+"]: DisneyPlusIcon,
@@ -148,7 +122,6 @@ const SubscriptionContainer = () => {
 
   const generateTableIcon = (subscriptionName: string) => {
     const Icon = iconList[subscriptionName] ?? iconList["DEFAULT"];
-    console.log(Icon);
     return iconClassInjector({
       IconComponent: Icon,
       style: "justify-self-center",
@@ -284,10 +257,59 @@ const SubscriptionContainer = () => {
     );
   };
 
+  const tableRenderer = () => {
+    if (isError) {
+      return "Thare has been an error while fetching the data!";
+    }
+
+    if (isLoading) {
+      return "Data is loading...";
+    }
+
+    if (!subscriptions.length) {
+      return "No Data found.";
+    }
+
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{subscriptionTranslation("icon")}</TableHead>
+            <TableHead>{subscriptionTranslation("name")}</TableHead>
+            <TableHead>{subscriptionTranslation("price")}</TableHead>
+            <TableHead>{subscriptionTranslation("duration")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {subscriptions.map((sub) => (
+            <TableRow key={sub.id}>
+              <TableCell>
+                {generateTableIcon(toLowerAndTrimSpaces(sub.name))}
+              </TableCell>
+              <TableCell>{sub.name}</TableCell>
+              <TableCell>${sub.price.toFixed(2)}</TableCell>
+              <TableCell>
+                {subscriptionTranslation(
+                  `durationOptions.${toLower(sub.duration)}`
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  };
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
     setIsDialogOpen(false);
   };
+
+  useEffect(() => {
+    if (isSuccess && payload) {
+      setSubscriptions(payload.data);
+    }
+  }, [isSuccess, payload]);
 
   useEffect(() => {
     return () => {
@@ -337,32 +359,7 @@ const SubscriptionContainer = () => {
           </DialogContent>
         </Dialog>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{subscriptionTranslation("icon")}</TableHead>
-              <TableHead>{subscriptionTranslation("name")}</TableHead>
-              <TableHead>{subscriptionTranslation("price")}</TableHead>
-              <TableHead>{subscriptionTranslation("duration")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {subscriptions.map((sub) => (
-              <TableRow key={sub.id}>
-                <TableCell>
-                  {generateTableIcon(toLowerAndTrimSpaces(sub.name))}
-                </TableCell>
-                <TableCell>{sub.name}</TableCell>
-                <TableCell>${sub.price.toFixed(2)}</TableCell>
-                <TableCell>
-                  {subscriptionTranslation(`durationOptions.${sub.duration}`)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
+      <CardContent>{tableRenderer()}</CardContent>
     </Card>
   );
 };
